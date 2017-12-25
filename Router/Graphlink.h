@@ -40,6 +40,8 @@ struct Vertex
 {
 	int numRouter;				 //路由编号
 	T nameRouter;				 //路由器名称
+	string borderNetNum;		//边界路由器网络号
+	string subNumber;			 //子网掩码
 	port *por;					 //接口数组
 	int numofports;				 //当前接口数
 	Edge<T, E> *adj;			 //边链表的头指针
@@ -115,6 +117,10 @@ public:
 	}
 	void ShortestPath(int v);
 	void printRouTable(int v, E dist[], int path[]);
+	void traverse() {
+		for (int i = NumberOfVertices() - 1; i >= 0; i--)
+			cout << " " << NodeTable[i].numRouter;
+	}
 private:
 	Vertex<T, E> * NodeTable;
 	int maxVertices;
@@ -226,19 +232,16 @@ void Graphlnk<T, E>::printRouTable(int v, E dist[], int path[])		//v为nodeta位置
 				j = path[j];
 			}
 			k--;
+			netN = NodeTable[i].borderNetNum;
+			subN = NodeTable[i].subNumber;
 			if (k == 0)
 			{
-				getNetMeg(v, d[k], netN, subN);
 				m = getPort(v, d[k]);				//得到的接口号
-													//cout << getValue(d[k]) << " ";			//d[0]由于k多加了一次
 				cout << netN << " |" << subN << " |" << "  直接交付接口" << NodeTable[v].por[m].num << "    |    " << dist[i] << endl;
 			}
 			else if (k >= 1)
 			{
-				getNetMeg(d[0], d[1], netN, subN);
 				cout << netN << " |" << subN << " |" << "     " << getValue(d[k]) << "      |    " << dist[i] << endl;
-				//				cout << "下一跳为路由器" << endl;
-				//				cout << " ";
 
 			}
 		}
@@ -259,7 +262,7 @@ void Graphlnk<T, E>::readtext() {
 	}
 	while (vfile.eof() != 1)
 	{
-		vfile >> Router.numRouter >> Router.nameRouter;
+		vfile >> Router.numRouter >> Router.nameRouter >> Router.borderNetNum >> Router.subNumber;
 		insertVertex(Router);
 	}
 	efile.open("edges.txt");
@@ -295,6 +298,8 @@ bool Graphlnk<T, E>::insertVertex(const Vertex<T, E> vertex)
 	if (numVertices == maxVertices) return false;
 	NodeTable[numVertices].nameRouter = vertex.nameRouter;
 	NodeTable[numVertices].numRouter = vertex.numRouter;
+	NodeTable[numVertices].borderNetNum = vertex.borderNetNum;
+	NodeTable[numVertices].subNumber = vertex.subNumber;
 	numVertices++;
 	return true;
 }
@@ -351,12 +356,16 @@ bool Graphlnk<T, E>::removeVertex(int v)		//同时删除和这个点有关的边
 		}
 		p = p->link;									//遍历到下一个邻接点
 	}
+	cout << "删除成功" << endl;
+	cout << "(现可供使用的路由器: ";
+	traverse();
+	cout << endl;
 	return true;
 }
 template<class T, class E>
 bool Graphlnk<T, E>::insertEdge(int v1, int v2, const Edge<T, E> edge)
 {
-	v1 = getVertexPos(v1);
+	v1 = getVertexPos(v1);										//将路由表编号转化为邻接表中顶点位置
 	v2 = getVertexPos(v2);
 	int n;
 	if (v1 >= 0 && v1< numVertices && v2 >= 0 && v2<numVertices)
@@ -377,7 +386,6 @@ bool Graphlnk<T, E>::insertEdge(int v1, int v2, const Edge<T, E> edge)
 		n = NodeTable[v1].numofports;
 		NodeTable[v1].por[n].num = n;							//依次接入接口
 		NodeTable[v1].por[n].netNum = edge.netNum;				//将网络号传入到接口的网络号
-
 		NodeTable[v1].numofports++;
 		NodeTable[v1].adj = p;
 		q->dest = v1;
@@ -399,17 +407,19 @@ bool Graphlnk<T, E>::insertEdge(int v1, int v2, const Edge<T, E> edge)
 template<class T, class E>
 bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 {
+	v1 = getVertexPos(v1);										//将路由表编号转化为邻接表中顶点位置
+	v2 = getVertexPos(v2);
 	if (v1 != -1 && v2 != -1)
 	{
 		Edge<T, E> *p = NodeTable[v1].adj, *q = NULL, *s = p;
-		while (p != NULL && p->dest != v2)
+		while (p != NULL && p->dest != v2)						//找到对应边在邻接表的位置
 		{
 			q = p;
 			p = p->link;
 		}
 		if (p != NULL)
 		{
-			if (p == s)
+			if (p == s)											//v1第一个邻接点为v2
 				NodeTable[v1].adj = p->link;
 			else
 			{
@@ -426,8 +436,8 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 		s = p;
 		while (p->dest != v1)
 		{
-			q =p;
-			p= p->link;
+			q = p;
+			p = p->link;
 		}
 		if (p == s)
 			NodeTable[v2].adj = p->link;
@@ -437,8 +447,11 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 		}
 		delete p;
 		numEdges--;
+		cout << " 删除成功" << endl;
+
 		return true;
 	}
+	cout << "删除失败" << endl;
 	return false;
 }
 template<class T, class E>
@@ -492,6 +505,3 @@ string Graphlnk<T, E>::merge(string net, string subnet)
 	return  a;
 }
 #endif
-
-
-//test

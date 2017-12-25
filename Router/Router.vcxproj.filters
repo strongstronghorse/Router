@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="head.h">
+    <ClInclude Include="标头.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="标头.h">
+    <ClInclude Include="Graphlink.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

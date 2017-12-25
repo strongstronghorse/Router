@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 using namespace std;
-#include "Graphlink.h"
+#include "Graphlnk.h"
 int main()
 {
 	Edge<string, int> edge;
@@ -25,7 +25,8 @@ int main()
 		case'1':
 			cout << " 请输入路由器的编号以及路由器的名称" << endl;
 			cout << "请输入你需要查询的路由器的编号";
-			cout << "(现可供查询的路由器: 1 - " << g.NumberOfVertices() << ')' << endl;
+			cout << "(现可供查询的路由器: ";
+			g.traverse();
 			cin >> Router.numRouter;
 			cin >> Router.nameRouter;
 			g.insertVertex(Router);
@@ -39,22 +40,26 @@ int main()
 			break;
 		case'3':
 			cout << "请输入你需要查询的路由器的编号";
-			cout << "(现可供查询的路由器: 1 - " << g.NumberOfVertices() << ')' << endl;
+			cout << "(现可供查询的路由器: ";
+			g.traverse();
+			cout << endl;
 			cin >> v1;
 			g.ShortestPath(v1);
 			break;
 		case'4':
 			cout << "请输入你要删除的路由器的编号" << endl;
-			cout << "(现可供查询的路由器: 1 - " << g.NumberOfVertices() << ')' << endl;
+			cout << "(现可供查询的路由器: ";
+			g.traverse();
+			cout << endl;
 			cin >> num;
-			num = g.getVertexPos(num);
 			g.removeVertex(num);
 			break;
 		case'5':
 			cout << "请输入你要删除的链路两端的路由器编号" << endl;
+			cout << "(现可供使用的路由器: ";
+			g.traverse();
+			cout << endl;
 			cin >> v1 >> v2;
-			v1 = g.getVertexPos(v1);
-			v2 = g.getVertexPos(v2);
 			g.removeEdge(v1, v2);
 			break;
 		case'6':
@@ -63,6 +68,6 @@ int main()
 		}
 
 	}
-//test
+
 	return 0;
 }
