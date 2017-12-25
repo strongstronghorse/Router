@@ -11,7 +11,7 @@ const int maxValue = 10000;	//无穷大的权值
 const string invalidN = "0.0.0.0";//无效网络号
 const string invalidS = "255.255.255.255";//无效子网掩码
 template<class T, class E>
-111struct Edge
+1111struct Edge
 {
 	int dest;
 	string netNum;          //网络号
