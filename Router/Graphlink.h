@@ -426,8 +426,8 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 		s = p;
 		while (p->dest != v1)
 		{
-			q = NULL;
-			s = p;
+			q =p;
+			p= p->link;
 		}
 		if (p == s)
 			NodeTable[v2].adj = p->link;
@@ -436,6 +436,7 @@ bool Graphlnk<T, E>::removeEdge(int v1, int v2)
 			q->link = p->link;
 		}
 		delete p;
+		numEdges--;
 		return true;
 	}
 	return false;
