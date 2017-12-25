@@ -492,3 +492,6 @@ string Graphlnk<T, E>::merge(string net, string subnet)
 	return  a;
 }
 #endif
+
+
+//test
